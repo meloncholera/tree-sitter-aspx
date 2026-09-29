@@ -28,7 +28,7 @@ export default grammar({
 
   // A UTF-8 BOM is whitespace as far as the page parser is concerned. UTF-16
   // files are decoded to UTF-8 before parsing; see tools/corpus-check.mjs.
-  extras: $ => [
+  extras: _ => [
     /\s/,
     /\uFEFF/,
   ],
@@ -107,10 +107,10 @@ export default grammar({
       '%>',
     ),
 
-    _name: _$ => /[A-Za-z_][A-Za-z0-9_.:-]*/,
+    _name: _ => /[A-Za-z_][A-Za-z0-9_.:-]*/,
     directive_name: $ => $._name,
-    web_handler_name: _$ => choice('WebHandler', 'webhandler', 'WEBHANDLER'),
-    web_service_name: _$ => choice('WebService', 'webservice', 'WEBSERVICE'),
+    web_handler_name: _ => choice('WebHandler', 'webhandler', 'WEBHANDLER'),
+    web_service_name: _ => choice('WebService', 'webservice', 'WEBSERVICE'),
 
     // `Language` is its own attribute so the value is a language_value node
     // and the scanner can record C# vs VB for later code tokens.
@@ -123,7 +123,7 @@ export default grammar({
       ),
     ),
 
-    language_name: _$ => reserved('Language'),
+    language_name: _ => reserved('Language'),
 
     _language_value: $ => alias(choice($._lang_csharp, $._lang_vb, $._lang_other), $.language_value),
 
@@ -143,7 +143,7 @@ export default grammar({
       )),
     ),
 
-    attribute_name: _$ => /[A-Za-z_:][A-Za-z0-9_.:-]*/,
+    attribute_name: _ => /[A-Za-z_:][A-Za-z0-9_.:-]*/,
 
     quoted_attribute_value: $ => choice(
       seq('"', repeat($._double_quoted_chunk), '"'),
@@ -166,7 +166,7 @@ export default grammar({
       alias('<', $.attribute_value),
     ),
 
-    unquoted_attribute_value: _$ => /[^"'=<>\s`]+/,
+    unquoted_attribute_value: _ => /[^"'=<>\s`]+/,
 
     server_comment: $ => seq(
       '<%--',
@@ -236,7 +236,7 @@ export default grammar({
       '>',
     ),
 
-    script_tag_name: _$ => reserved('script'),
+    script_tag_name: _ => reserved('script'),
 
     style_element: $ => seq(
       alias($.style_start_tag, $.start_tag),
@@ -257,7 +257,7 @@ export default grammar({
       '>',
     ),
 
-    style_tag_name: _$ => reserved('style'),
+    style_tag_name: _ => reserved('style'),
 
     void_element: $ => seq(
       '<',
@@ -266,7 +266,7 @@ export default grammar({
       choice('/>', '>'),
     ),
 
-    void_tag_name: _$ => choice(...VOID_TAGS.map((name) => reserved(name))),
+    void_tag_name: _ => choice(...VOID_TAGS.map((name) => reserved(name))),
 
     self_closing_element: $ => seq(
       '<',
@@ -307,8 +307,8 @@ export default grammar({
       '>',
     ),
 
-    doctype_token: _$ => token(prec(RESERVED, /<![Dd][Oo][Cc][Tt][Yy][Pp][Ee]/)),
+    doctype_token: _ => token(prec(RESERVED, /<![Dd][Oo][Cc][Tt][Yy][Pp][Ee]/)),
 
-    text: _$ => /[^<]+/,
+    text: _ => /[^<]+/,
   },
 });
